@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./database/db");
 
+
 const app = express();
 
 app.use(cors());
@@ -36,9 +37,7 @@ app.post("/register", (req, res) => {
     );
 });
 
-app.listen(5000, () => {
-    console.log("Server running on port 5000");
-});
+
 
 
 app.get("/users", (req, res) => {
@@ -95,4 +94,55 @@ app.get("/attendance", (req, res) => {
             res.json(rows);
         }
     );
+});
+
+
+//post authentication
+app.post("/authenticate", (req, res) => {
+
+    const { employee_id } = req.body;
+
+    db.get(
+        "SELECT * FROM users WHERE employee_id = ?",
+        [employee_id],
+        (err, row) => {
+
+            if (err) {
+                return res.status(500).json({
+                    error: err.message
+                });
+            }
+
+            if (!row) {
+                return res.json({
+                    success: false,
+                    message: "User not found"
+                });
+            }
+
+            res.json({
+                success: true,
+                user: row
+            });
+        }
+    );
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.listen(5000, () => {
+    console.log("Server running on port 5000");
 });
